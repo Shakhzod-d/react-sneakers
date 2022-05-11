@@ -1,80 +1,53 @@
+import Header from "./components/Header";
+import Card from "./components/Card/Card";
+import Drawer from "./components/Drawer";
+import { useEffect, useState } from "react";
+
 function App() {
+  const [items, setItems] = useState([]);
+  const [cartItems, setCartItems] = useState([]);
+  const [cartOpen, setCartOpen] = useState(false);
+
+  useEffect(() => {
+    fetch("https://627a34994a5ef80e2c15cefe.mockapi.io/item")
+      .then((res) => {
+        return res.json();
+      })
+      .then((json) => {
+        setItems(json);
+      });
+  }, []);
+
+  const onAddToCart = (obj) => {
+    setCartItems((prev) => [...prev, obj]);
+    console.log(obj);
+  };
+
   return (
     <div className="wrapper clear">
-      <header className="d-flex justify-between align-center p-40">
-        <div className="d-flex align-center">
-          <img width={40} height={40} src="/img/logo.png" alt="" />
-          <div>
-            <h3 className="text-uppercase">React Sneakers</h3>
-            <p className="opacity-5">Магазин лучших кроссовок</p>
+      {cartOpen && (
+        <Drawer items={cartItems} onClose={() => setCartOpen(false)} />
+      )}
+      <Header onClickCart={() => setCartOpen(true)} />
+      <div className="content p-40">
+        <div className="d-flex align-center justify-between mb-40">
+          <h1>Все кроссовки</h1>
+          <div className="search-block">
+            <img src="/img/search.png" alt="search" />
+            <input type="text" placeholder="Поиск..." />
           </div>
         </div>
-        <ul className="d-flex">
-          <li className="mr-30">
-            <img src="/img/Group.svg" alt="no" />
-            <span>1205 руб.</span>
-          </li>
-          <li>
-            <img src="/img/Union.svg" alt="no" />
-          </li>
-        </ul>
-      </header>
 
-      <div className="content p-40">
-        <h1 className="mb-40">Все кроссовки</h1>
-        <div className="d-flex">
-          <div className="card">
-            <img width={133} height={122} src="/img/sneakers/1.jpg" alt="" />
-            <h5>Мужские Кроссовки Nike Blazer Mid Suede</h5>
-            <div className="d-flex justify-between align-center">
-              <div className="d-flex flex-column">
-                <span>Цена:</span>
-                <b>12 999 руб.</b>
-              </div>
-              <button className="button">
-                <img width={11} height={11} src="/img/plus.svg" alt="" />
-              </button>
-            </div>
-          </div>
-          <div className="card">
-            <img width={133} height={122} src="/img/sneakers/2.jpg" alt="" />
-            <h5>Мужские Кроссовки Nike Blazer Mid Suede</h5>
-            <div className="d-flex justify-between align-center">
-              <div className="d-flex flex-column">
-                <span>Цена:</span>
-                <b>12 999 руб.</b>
-              </div>
-              <button className="button">
-                <img width={11} height={11} src="/img/plus.svg" alt="" />
-              </button>
-            </div>
-          </div>
-          <div className="card">
-            <img width={133} height={122} src="/img/sneakers/3.jpg" alt="" />
-            <h5>Мужские Кроссовки Nike Blazer Mid Suede</h5>
-            <div className="d-flex justify-between align-center">
-              <div className="d-flex flex-column">
-                <span>Цена:</span>
-                <b>12 999 руб.</b>
-              </div>
-              <button className="button">
-                <img width={11} height={11} src="/img/plus.svg" alt="" />
-              </button>
-            </div>
-          </div>
-          <div className="card">
-            <img width={133} height={122} src="/img/sneakers/4.jpg" alt="" />
-            <h5>Мужские Кроссовки Nike Blazer Mid Suede</h5>
-            <div className="d-flex justify-between align-center">
-              <div className="d-flex flex-column">
-                <span>Цена:</span>
-                <b>12 999 руб.</b>
-              </div>
-              <button className="button">
-                <img width={11} height={11} src="/img/plus.svg" alt="" />
-              </button>
-            </div>
-          </div>
+        <div className="d-flex flex-wrap">
+          {items.map((title) => (
+            <Card
+              title={title.title}
+              price={title.price}
+              imageUrl={title.imgUrl}
+              onFavorite={() => console.log("liked")}
+              onPlus={(obj) => onAddToCart(obj)}
+            />
+          ))}
         </div>
       </div>
     </div>

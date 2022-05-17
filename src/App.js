@@ -3,9 +3,10 @@ import axios from "axios";
 import { Routes, Route } from "react-router-dom";
 
 import Header from "./components/Header";
-import Drawer from "./components/Drawer";
+import Drawer from "./components/Drawer/Drawer";
 import Home from "./pages/Home";
 import Favorites from "./pages/Favorites";
+import Orders from "./pages/Orders";
 import AppContext from "./context";
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
   const [searchValue, setSearchValue] = useState("");
   const [cartOpen, setCartOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const base_url = "https://627a34994a5ef80e2c15cefe.mockapi.io";
 
   useEffect(() => {
     // fetch("https://627a34994a5ef80e2c15cefe.mockapi.io/item")
@@ -25,21 +27,25 @@ function App() {
     //     setItems(json);
     //   });
     async function fetchData() {
-      const cartResponse = await axios.get(
-        "https://627a34994a5ef80e2c15cefe.mockapi.io/cart"
-      );
-      const favoriteResponse = await axios.get(
-        "https://627a34994a5ef80e2c15cefe.mockapi.io/favorites"
-      );
-      const itemResponse = await axios.get(
-        "https://627a34994a5ef80e2c15cefe.mockapi.io/item"
-      );
+      try {
+        // const [cartResponse, favoriteResponse, itemResponse] =
+        //   await new Promise.all([
+        //     axios.get("https://627a34994a5ef80e2c15cefe.mockapi.io/cart"),
+        //     axios.get("https://627a34994a5ef80e2c15cefe.mockapi.io/favorites"),
+        //     axios.get("https://627a34994a5ef80e2c15cefe.mockapi.io/item"),
+        //   ]);
+        const cartResponse = await axios.get(`${base_url}/cart`);
+        const favoriteResponse = await axios.get(`${base_url}/favorites`);
+        const itemResponse = await axios.get(`${base_url}/item`);
 
-      setIsLoading(false);
+        setIsLoading(false);
 
-      setCartItems(cartResponse.data);
-      setFavorites(favoriteResponse.data);
-      setItems(itemResponse.data);
+        setCartItems(cartResponse.data);
+        setFavorites(favoriteResponse.data);
+        setItems(itemResponse.data);
+      } catch (error) {
+        alert("ошибка при запросе данных");
+      }
     }
 
     fetchData();
@@ -57,11 +63,11 @@ function App() {
           `https://627a34994a5ef80e2c15cefe.mockapi.io/cart/${findItem.id}`
         );
       } else {
-        setCartItems((prev) => [...prev, obj]);
         const { data } = await axios.post(
           "https://627a34994a5ef80e2c15cefe.mockapi.io/cart",
           obj
         );
+        setCartItems((prev) => [...prev, data]);
         setCartItems((prev) =>
           prev.map((item) => {
             if (item.parentId === data.parentId) {
@@ -80,9 +86,14 @@ function App() {
     }
   };
   const onRemoveItem = (id) => {
+    try {
+      axios.delete(`https://627a34994a5ef80e2c15cefe.mockapi.io/cart/${id}`);
+      setCartItems((prev) => prev.filter((item) => item.id !== id));
+    } catch (error) {
+      alert("ошибка при запросе данных");
+      console.error(error);
+    }
     // console.log(id);
-    axios.delete(`https://627a34994a5ef80e2c15cefe.mockapi.io/cart/${id}`);
-    setCartItems((prev) => prev.filter((item) => item.id !== id));
   };
   const onAddToFavorite = async (obj) => {
     // console.log(obj);
@@ -110,7 +121,7 @@ function App() {
   };
 
   const isItemAdded = (id) => {
-    return cartItems.some((obj) => Number(obj.id) === Number(id));
+    return cartItems.some((obj) => Number(obj.parentId) === Number(id));
   };
 
   return (
@@ -126,13 +137,13 @@ function App() {
       }}
     >
       <div className="wrapper clear">
-        {cartOpen && (
-          <Drawer
-            items={cartItems}
-            onClose={() => setCartOpen(false)}
-            onRemove={onRemoveItem}
-          />
-        )}
+        <Drawer
+          items={cartItems}
+          onClose={() => setCartOpen(false)}
+          onRemove={onRemoveItem}
+          opened={cartOpen}
+        />
+
         <Header onClickCart={() => setCartOpen(true)} />
         <Routes>
           <Route
@@ -152,6 +163,7 @@ function App() {
           />
 
           <Route path="/favorites" element={<Favorites />} />
+          <Route path="/orders" element={<Orders />} />
         </Routes>
       </div>
     </AppContext.Provider>

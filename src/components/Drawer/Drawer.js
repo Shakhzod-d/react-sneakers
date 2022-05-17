@@ -1,15 +1,17 @@
 import React, { useState } from "react";
-import AppContext from "../context";
 import axios from "axios";
 
-import Info from "./Info";
+import Info from "../Info";
+import { useCart } from "../hooks/useCart";
+
+import styles from "./Drawer.module.scss";
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-const Drawer = ({ onClose, onRemove, items = [] }) => {
+const Drawer = ({ onClose, onRemove, items = [], opened }) => {
+  const { cartItems, setCartItems, totalPrice } = useCart();
   const [isOrderCompleted, setIsOrderCompleted] = useState(false);
   const [orderId, setOrderId] = useState(null);
-  const { cartItems, setCartItems } = React.useContext(AppContext);
   const [isLoading, setIsLoading] = useState(false);
 
   const onClickOrder = async () => {
@@ -26,7 +28,7 @@ const Drawer = ({ onClose, onRemove, items = [] }) => {
       for (let i = 0; i < cartItems.length; i++) {
         const item = cartItems[i];
         await axios.delete(
-          "https://627a34994a5ef80e2c15cefe.mockapi.io/cart",
+          "https://627a34994a5ef80e2c15cefe.mockapi.io/cart/",
           +item.id
         );
         await delay(1000);
@@ -38,9 +40,9 @@ const Drawer = ({ onClose, onRemove, items = [] }) => {
   };
 
   return (
-    <div className="'overlay">
-      <div className="drawer">
-        <h2 className="d-flex justify-between justify-between mb-30">
+    <div className={`${styles.overlay} ${opened ? styles.overlayVisable : ""}`}>
+      <div className={styles.drawer}>
+        <div className="d-flex justify-between justify-between mb-30">
           <h2 className="d-flex justify-between mb-30">
             Корзина{" "}
             <img
@@ -50,11 +52,11 @@ const Drawer = ({ onClose, onRemove, items = [] }) => {
               alt="Close"
             />
           </h2>
-        </h2>
+        </div>
 
         {items.length > 0 ? (
           <div className="d-flex flex-column flex">
-            <div className="items">
+            <div className="items flex">
               {items.map((obj, index) => {
                 const { id, title, price, imageUrl } = obj;
                 // console.log(obj);
@@ -84,12 +86,12 @@ const Drawer = ({ onClose, onRemove, items = [] }) => {
                 <li className="d-flex">
                   <span>Итого: </span>
                   <div></div>
-                  <b>21 498 руб. </b>
+                  <b>{totalPrice} руб. </b>
                 </li>
                 <li className="d-flex">
                   <span>Налог 5%: </span>
                   <div></div>
-                  <b>1074 руб. </b>
+                  <b>{((totalPrice / 100) * 5).toFixed(2)} руб. </b>
                 </li>
               </ul>
               <button

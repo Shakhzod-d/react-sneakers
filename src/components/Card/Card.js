@@ -67,14 +67,18 @@ function Card(props) {
                 <b>{price} руб.</b>
               </div>
 
-              <img
-                onClick={onClickPlus}
-                className={styles.plus}
-                width={33}
-                height={33}
-                src={isItemAdded(id) ? "/img/btn-checked.svg" : "/img/plus.svg"}
-                alt="checked"
-              />
+              {onPlus && (
+                <img
+                  onClick={onClickPlus}
+                  className={styles.plus}
+                  width={33}
+                  height={33}
+                  src={
+                    isItemAdded(id) ? "/img/btn-checked.svg" : "/img/plus.svg"
+                  }
+                  alt="checked"
+                />
+              )}
             </div>
           </div>
         </div>

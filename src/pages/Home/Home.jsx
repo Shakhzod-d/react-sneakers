@@ -1,5 +1,7 @@
 import React from "react";
-import Card from "../components/Card/Card";
+import Card from "../../components/Card/Card";
+
+import "./Home.css";
 
 function Home({
   searchValue,
@@ -28,6 +30,7 @@ function Home({
       );
     });
   };
+
   return (
     <div className="content p-40">
       <div className="d-flex align-center justify-between mb-40">
@@ -53,7 +56,7 @@ function Home({
         </div>
       </div>
 
-      <div className="d-flex flex-wrap">{renderItems()}</div>
+      <div className="cartContainer">{renderItems()}</div>
     </div>
   );
 }

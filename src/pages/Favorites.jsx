@@ -12,7 +12,7 @@ function Favorites() {
         <h1>Мои закладки</h1>
       </div>
 
-      <div className="d-flex flex-wrap">
+      <div className="cartContainer">
         {favorites.map((item, index) => (
           <Card
             key={index}

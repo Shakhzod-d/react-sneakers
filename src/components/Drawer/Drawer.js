@@ -42,16 +42,14 @@ const Drawer = ({ onClose, onRemove, items = [], opened }) => {
   return (
     <div className={`${styles.overlay} ${opened ? styles.overlayVisable : ""}`}>
       <div className={styles.drawer}>
-        <div className="d-flex justify-between justify-between mb-30">
-          <h2 className="d-flex justify-between mb-30">
-            Корзина{" "}
-            <img
-              onClick={onClose}
-              className="cu-p"
-              src="img/btn-remove.svg"
-              alt="Close"
-            />
-          </h2>
+        <div className="d-flex justify-between mb-30">
+          <h2 className="cartTitle">Корзина</h2>
+          <img
+            onClick={onClose}
+            className="cu-p"
+            src="img/btn-remove.svg"
+            alt="Close"
+          />
         </div>
 
         {items.length > 0 ? (
